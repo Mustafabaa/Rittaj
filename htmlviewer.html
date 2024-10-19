@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('https://example.com/your-background-image.jpg') no-repeat center center fixed; /* Change the URL to your desired background */
+            background-size: cover;
+            color: #fff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+        h2, h3 {
+            text-align: center;
+        }
+        .error-message {
+            display: none;
+            color: red;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background: #007bff;
+        }
+    </style>
+    <script>
+        let flightCustomers = [];
+        let internetCustomers = [];
+
+        function validateLogin(event) {
+            event.preventDefault();
+            const username = event.target.username.value;
+            const password = event.target.password.value;
+            const errorMessage = document.getElementById('error-message');
+
+            if (username === 'mustafa' && password === '123') {
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('dashboard-box').style.display = 'block';
+            } else {
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        function openFlightForm() {
+            document.getElementById('dashboard-box').style.display = 'none';
+            document.getElementById('flight-box').style.display = 'block';
+        }
+
+        function openInternetForm() {
+            document.getElementById('dashboard-box').style.display = 'none';
+            document.getElementById('internet-box').style.display = 'block';
+        }
+
+        function addFlightCustomer(event) {
+            event.preventDefault();
+            const name = event.target['flight-customer-name'].value;
+            const phone = event.target['flight-customer-phone'].value;
+            const amountPaid = parseFloat(event.target['flight-customer-amount'].value);
+            const paymentStatus = event.target['flight-customer-payment'].value;
+
+            flightCustomers.push({ name, phone, amountPaid, payment: paymentStatus });
+            updateFlightCustomerTable();
+            calculateTotalFlightPayments();
+            event.target.reset();
+        }
+
+        function updateFlightCustomerTable() {
+            const tableBody = document.getElementById('flight-customer-table-body');
+            tableBody.innerHTML = '';
+            flightCustomers.forEach((customer, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${customer.name}</td>
+                    <td>${customer.phone}</td>
+                    <td>
+                        ${customer.payment} 
+                        <button onclick="updateFlightPaymentStatus(${index})">Change</button>
+                    </td>
+                    <td>$${customer.amountPaid.toFixed(2)}</td>
+                    <td>
+                        <button onclick="deleteFlightCustomer(${index})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateFlightPaymentStatus(index) {
+            const newStatus = prompt("Enter new payment status (Paid/Not Paid):");
+            if (newStatus) {
+                flightCustomers[index].payment = newStatus;
+                updateFlightCustomerTable();
+                calculateTotalFlightPayments();
+            }
+        }
+
+        function deleteFlightCustomer(index) {
+            flightCustomers.splice(index, 1);
+            updateFlightCustomerTable();
+            calculateTotalFlightPayments();
+        }
+
+        function calculateTotalFlightPayments() {
+            const total = flightCustomers.reduce((sum, customer) => {
+                return customer.payment === 'Paid' ? sum + customer.amountPaid : sum;
+            }, 0);
+            document.getElementById('total-flight-payments').innerText = `Total Payments: $${total.toFixed(2)}`;
+        }
+
+        function addInternetCustomer(event) {
+            event.preventDefault();
+            const name = event.target['internet-customer-name'].value;
+            const phone = event.target['internet-customer-phone'].value;
+            const amountPaid = parseFloat(event.target['internet-customer-amount'].value);
+            const paymentStatus = event.target['internet-customer-payment'].value;
+
+            internetCustomers.push({ name, phone, amountPaid, payment: paymentStatus });
+            updateInternetCustomerTable();
+            calculateTotalInternetPayments();
+            event.target.reset();
+        }
+
+        function updateInternetCustomerTable() {
+            const tableBody = document.getElementById('internet-customer-table-body');
+            tableBody.innerHTML = '';
+            internetCustomers.forEach((customer, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${customer.name}</td>
+                    <td>${customer.phone}</td>
+                    <td>
+                        ${customer.payment} 
+                        <button onclick="updateInternetPaymentStatus(${index})">Change</button>
+                    </td>
+                    <td>$${customer.amountPaid.toFixed(2)}</td>
+                    <td>
+                        <button onclick="deleteInternetCustomer(${index})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateInternetPaymentStatus(index) {
+            const newStatus = prompt("Enter new payment status (Paid/Not Paid):");
+            if (newStatus) {
+                internetCustomers[index].payment = newStatus;
+                updateInternetCustomerTable();
+                calculateTotalInternetPayments();
+            }
+        }
+
+        function deleteInternetCustomer(index) {
+            internetCustomers.splice(index, 1);
+            updateInternetCustomerTable();
+            calculateTotalInternetPayments();
+        }
+
+        function calculateTotalInternetPayments() {
+            const total = internetCustomers.reduce((sum, customer) => {
+                return customer.payment === 'Paid' ? sum + customer.amountPaid : sum;
+            }, 0);
+            document.getElementById('total-internet-payments').innerText = `Total Payments: $${total.toFixed(2)}`;
+        }
+
+        function searchCustomer(event, type) {
+            event.preventDefault();
+            const searchName = document.querySelector(`input[name="${type}-search-name"]`).value.toLowerCase();
+            const customerList = document.getElementById(`${type}-customer-list`);
+            customerList.innerHTML = '';
+
+            const filteredCustomers = type === 'flight' 
+                ? flightCustomers.filter(customer => customer.name.toLowerCase().includes(searchName))
+                : internetCustomers.filter(customer => customer.name.toLowerCase().includes(searchName));
+
+            if (filteredCustomers.length > 0) {
+                filteredCustomers.forEach(customer => {
+                    const customerDiv = document.createElement('div');
+                    customerDiv.innerHTML = `<strong>Name:</strong> ${customer.name} <br> <strong>Phone:</strong> ${customer.phone} <br> <strong>Payment:</strong> ${customer.payment} <br> <strong>Amount Paid:</strong> $${customer.amountPaid.toFixed(2)}`;
+                    customerList.appendChild(customerDiv);
+                });
+            } else {
+                customerList.innerHTML = '<p>No customer found</p>';
+            }
+        }
+    </script>
+</head>
+<body>
+
+<!-- Login Section -->
+<div class="container">
+    <div class="login-box active" id="login-box">
+        <h2>Login</h2>
+        <form onsubmit="validateLogin(event)">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="submit" value="Login">
+        </form>
+        <div class="error-message" id="error-message">Sorry, try again!</div>
+        <div class="footer">
+            © 2024 OfficeCorp
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div class="dashboard-box" id="dashboard-box" style="display:none;">
+        <h2>Dashboard</h2>
+        <div class="button-container">
+            <button onclick="alert('OMT Selected');">OMT</button>
+            <button onclick="openFlightForm();">Flight</button>
+            <button onclick="openInternetForm();">Internet</button>
+        </div>
+        <div class="footer">
+            © 2024 OfficeCorp
+        </div>
+    </div>
+
+    <!-- Flight Customer Management Section -->
+    <div class="flight-box" id="flight-box" style="display:none;">
+        <h2>Flight Information</h2>
+        <form id="flight-customer-form" onsubmit="addFlightCustomer(event)">
+            <input type="text" name="flight-customer-name" placeholder="Customer Name" required>
+            <input type="tel" name="flight-customer-phone" placeholder="Phone Number" required>
+            <input type="number" name="flight-customer-amount" placeholder="Amount Paid" required step="0.01">
+            <select name="flight-customer-payment" required>
+                <option value="" disabled selected>Payment Status</option>
+                <option value="Paid">Paid</option>
+                <option value="Not Paid">Not Paid</option>
+            </select>
+            <input type="submit" value="Add Customer">
+        </form>
+
+        <!-- Customer Table -->
+        <h3>Flight Customer List</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone Number</th>
+                    <th>Payment Status</th>
+                    <th>Amount Paid</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="flight-customer-table-body">
+                <!-- Customer data will be inserted here -->
+            </tbody>
+        </table>
+
+        <!-- Total Payments Display -->
+        <h3 id="total-flight-payments">Total Payments: $0.00</h3>
+
+        <!-- Search Customer Section -->
+        <div class="search-box">
+            <h3>Search Flight Customer</h3>
+            <form onsubmit="searchCustomer(event, 'flight')">
+                <input type="text" name="flight-search-name" placeholder="Search by Name" required>
+                <input type="submit" value="Search">
+            </form>
+            <div id="flight-customer-list"></div>
+        </div>
+    </div>
+
+    <!-- Internet Customer Management Section -->
+    <div class="internet-box" id="internet-box" style="display:none;">
+        <h2>Internet Information</h2>
+        <form id="internet-customer-form" onsubmit="addInternetCustomer(event)">
+            <input type="text" name="internet-customer-name" placeholder="Customer Name" required>
+            <input type="tel" name="internet-customer-phone" placeholder="Phone Number" required>
+            <input type="number" name="internet-customer-amount" placeholder="Amount Paid" required step="0.01">
+            <select name="internet-customer-payment" required>
+                <option value="" disabled selected>Payment Status</option>
+                <option value="Paid">Paid</option>
+                <option value="Not Paid">Not Paid</option>
+            </select>
+            <input type="submit" value="Add Customer">
+        </form>
+
+        <!-- Customer Table -->
+        <h3>Internet Customer List</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone Number</th>
+                    <th>Payment Status</th>
+                    <th>Amount Paid</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="internet-customer-table-body">
+                <!-- Customer data will be inserted here -->
+            </tbody>
+        </table>
+
+        <!-- Total Payments Display -->
+        <h3 id="total-internet-payments">Total Payments: $0.00</h3>
+
+        <!-- Search Customer Section -->
+        <div class="search-box">
+            <h3>Search Internet Customer</h3>
+            <form onsubmit="searchCustomer(event, 'internet')">
+                <input type="text" name="internet-search-name" placeholder="Search by Name" required>
+                <input type="submit" value="Search">
+            </form>
+            <div id="internet-customer-list"></div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
